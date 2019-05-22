@@ -1,6 +1,6 @@
 ---
 trigger:
-- master
+  - master
 
 jobs:
   - job: precommit
