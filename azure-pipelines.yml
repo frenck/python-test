@@ -53,7 +53,7 @@ jobs:
           testResultsFiles: 'testresult.xml'
           testRunTitle: '$(Build.BuildNumber)[$(Agent.JobName)] - Python $(python.version)'
         condition: succeededOrFailed()
-        display: 'publish test results'
+        displayName: 'publish test results'
 
       - script: |
           coverage xml -o coverage.xml
