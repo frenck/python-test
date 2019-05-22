@@ -55,9 +55,11 @@ jobs:
         condition: succeededOrFailed()
         displayName: 'publish test results'
 
-      - script: |
-         summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
-         reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: 'cobertura'
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
 
       - task: PublishCodeCoverageResults@1
         inputs:
