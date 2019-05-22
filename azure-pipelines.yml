@@ -18,7 +18,7 @@ jobs:
       - script: pre-commit run --all-files --show-diff-on-failure
         displayName: run pre-commit
 
-  - job: test
+  - job:
     pool:
       vmImage: 'ubuntu-16.04'
 
@@ -32,27 +32,35 @@ jobs:
           python.version: '3.7'
 
     steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(python.version)'
-      displayName: 'Use Python $(python.version)'
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(python.version)'
+        displayName: 'Use Python $(python.version)'
 
-    - script: |
-        python -m pip install --upgrade pip
-        pip install -r requirements_test.txt
-        pip install -r requirements.txt
-        pip install pytest-azurepipelines
-      displayName: 'Install dependencies'
+      - script: |
+          python -m pip install --upgrade pip
+          pip install -r requirements_test.txt
+          pip install -r requirements.txt
+          pip install pytest-azurepipelines
+        displayName: 'Install dependencies'
 
-    - script: |
-        tox
-      displayName: 'tox'
+      - script: |
+          pytest --junitxml=testresult.xml
+        displayName: 'pytest'
 
-    - bash: .tox/py*/bin/coverage xml -o coverage.xml
-      displayName: generate coverage xml
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: 'testresult.xml'
+          testRunTitle: '$(Build.BuildNumber)[$(Agent.JobName)] - Python $(python.version)'
+        condition: succeededOrFailed()
+        display: 'publish test results'
 
-    - task: PublishCodeCoverageResults@1
-      inputs:
-        codeCoverageTool: cobertura
-        summaryFileLocation: coverage.xml
-      displayName: publish coverage artifact
+      - script: |
+          coverage xml -o coverage.xml
+        displayName: generate coverage xml
+
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: cobertura
+          summaryFileLocation: coverage.xml
+        displayName: publish coverage artifact
