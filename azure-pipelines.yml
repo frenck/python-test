@@ -47,3 +47,12 @@ jobs:
     - script: |
         tox
       displayName: 'tox'
+
+    - bash: .tox/py*/bin/coverage xml -o coverage.xml
+      displayName: generate coverage xml
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: cobertura
+        summaryFileLocation: coverage.xml
+      displayName: publish coverage artifact
